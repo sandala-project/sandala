@@ -1,0 +1,38 @@
+{
+  "name": "sandala-admin-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit && vite build",
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "check": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.80.10",
+    "@tanstack/react-router": "^1.121.21",
+    "@tiptap/extension-image": "3.33.0",
+    "@tiptap/extension-link": "3.33.0",
+    "@tiptap/extension-text-align": "3.33.0",
+    "@tiptap/extension-underline": "3.33.0",
+    "@tiptap/pm": "3.33.0",
+    "@tiptap/react": "3.33.0",
+    "@tiptap/starter-kit": "3.33.0",
+    "lucide-react": "^1.26.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.57.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.1",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.5",
+    "@vitejs/plugin-react": "^4.5.2",
+    "playwright": "^1.53.1",
+    "typescript": "^5.8.3",
+    "vite": "^6.4.5"
+  }
+}

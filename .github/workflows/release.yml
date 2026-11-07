@@ -1,0 +1,21 @@
+name: Release build
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  documentation:
+    uses: ./.github/workflows/docs.yml
+  build:
+    uses: ./.github/workflows/ci.yml
+    with:
+      export_images: true

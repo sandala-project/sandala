@@ -1,0 +1,72 @@
+[project]
+site_name = "Sandala"
+site_description = "Headless CMS for structured data, built on MongoDB with an admin UI"
+docs_dir = "docs"
+site_dir = ".zensical/site"
+nav = [
+  { "Home" = "index.md" },
+  { "Get started" = [
+    { "Installation" = "getting-started/installation.md" },
+    { "Quickstart" = "getting-started/quickstart.md" },
+    { "Deployment" = "getting-started/deployment.md" },
+  ] },
+  { "Concepts" = [
+    { "Modules and entities" = "concepts/modules-and-entities.md" },
+    { "Schemas and semantic types" = "concepts/schemas-and-semantic-types.md" },
+    { "Node tree" = "concepts/node-tree.md" },
+    { "Permissions and ACL" = "concepts/permissions-and-acl.md" },
+    { "Links and resolution" = "concepts/links-and-resolution.md" },
+    { "Assets" = "concepts/assets.md" },
+    { "Users and authentication" = "concepts/users-and-authentication.md" },
+  ] },
+  { "Guides" = [
+    { "Designing a schema" = "guides/designing-a-schema.md" },
+    { "Working with nodes" = "guides/working-with-nodes.md" },
+    { "Querying nodes" = "guides/querying-nodes.md" },
+    { "Managing assets" = "guides/managing-assets.md" },
+    { "Writing hooks" = "guides/writing-hooks.md" },
+    { "Embedding Sandala" = "guides/embedding-sandala.md" },
+    { "Using the Admin UI" = "guides/using-the-admin-ui.md" },
+    { "Explore the demo library" = "guides/demo-library.md" },
+  ] },
+  { "Reference" = [
+    { "REST API" = [
+      { "Overview" = "reference/rest-api/overview.md" },
+      { "Errors" = "reference/rest-api/errors.md" },
+      { "Modules" = "reference/rest-api/modules.md" },
+      { "Entity schemas" = "reference/rest-api/entity-schemas.md" },
+      { "Nodes" = "reference/rest-api/nodes.md" },
+      { "Assets" = "reference/rest-api/assets.md" },
+      { "Users and groups" = "reference/rest-api/users-and-groups.md" },
+      { "Authentication" = "reference/rest-api/authentication.md" },
+    ] },
+    { "Semantic types" = "reference/semantic-types.md" },
+    { "Configuration" = "reference/configuration.md" },
+    { "Python API" = "reference/python-api.md" },
+    { "Node hooks" = "reference/node-hooks.md" },
+    { "Admin UI" = "reference/admin-ui.md" },
+  ] },
+  { "Development" = [
+    { "Architecture" = "development/architecture.md" },
+    { "Request lifecycle" = "development/request-lifecycle.md" },
+    { "Query builder" = "development/query-builder.md" },
+    { "Validation and schema evolution" = "development/validation-and-schema-evolution.md" },
+    { "ACL and field visibility" = "development/acl-and-field-visibility.md" },
+    { "Link patching" = "development/link-patching.md" },
+    { "Node hooks" = "development/node-hooks.md" },
+    { "Storage" = "development/storage.md" },
+    { "Bootstrap and the users module" = "development/bootstrap-and-users-module.md" },
+    { "Frontend architecture" = "development/frontend-architecture.md" },
+    { "Testing" = "development/testing.md" },
+  ] },
+]
+
+[project.theme]
+features = [
+  "navigation.instant",
+  "navigation.tracking",
+  "navigation.path",
+  "navigation.footer",
+  "search.highlight",
+  "search.suggest",
+]

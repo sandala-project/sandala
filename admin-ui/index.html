@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sandala Admin UI</title>
+    <script>
+      (() => {
+        const routePrefix = __SANDALA_APP_ROUTE_MARKER__;
+        const pathname = window.location.pathname;
+        const routeIndex = pathname.indexOf(routePrefix);
+        const mountPath = routeIndex >= 0
+          ? pathname.slice(0, routeIndex + 1)
+          : pathname.endsWith("/")
+            ? pathname
+            : `${pathname}/`;
+        const base = document.createElement("base");
+        base.href = new URL(mountPath, window.location.origin).toString();
+        document.head.prepend(base);
+        window.__SANDALA_RUNTIME_CONFIG__ = { basePath: mountPath };
+      })();
+    </script>
+    <!-- SANDALA_PRODUCTION_BOOTSTRAP_START -->
+    <script id="sandala-production-bootstrap">
+      (() => {
+        const entryKey = "src/main.tsx";
+        const mountPath = window.__SANDALA_RUNTIME_CONFIG__?.basePath ?? "/";
+        const mountUrl = new URL(mountPath, window.location.origin);
+
+        function loadClassicScript(url) {
+          return new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = url;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+        }
+
+        function appendStylesheets(manifest) {
+          const stylesheets = new Set();
+          const visited = new Set();
+
+          function visit(key) {
+            if (visited.has(key)) {
+              return;
+            }
+            visited.add(key);
+            const chunk = manifest[key];
+            if (chunk === undefined) {
+              return;
+            }
+
+            for (const stylesheet of chunk.css ?? []) {
+              stylesheets.add(stylesheet);
+            }
+            for (const importedKey of chunk.imports ?? []) {
+              visit(importedKey);
+            }
+          }
+
+          visit(entryKey);
+          for (const stylesheet of stylesheets) {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = new URL(stylesheet, mountUrl).toString();
+            document.head.appendChild(link);
+          }
+        }
+
+        function appendModulePreloads(manifest) {
+          const preloads = new Set();
+          const visited = new Set();
+
+          function visit(key) {
+            if (visited.has(key)) {
+              return;
+            }
+            visited.add(key);
+            const chunk = manifest[key];
+            if (chunk === undefined) {
+              return;
+            }
+
+            if (key !== entryKey && typeof chunk.file === "string") {
+              preloads.add(chunk.file);
+            }
+            for (const importedKey of chunk.imports ?? []) {
+              visit(importedKey);
+            }
+          }
+
+          visit(entryKey);
+          for (const preload of preloads) {
+            const link = document.createElement("link");
+            link.rel = "modulepreload";
+            link.href = new URL(preload, mountUrl).toString();
+            document.head.appendChild(link);
+          }
+        }
+
+        async function bootstrap() {
+          await loadClassicScript(new URL("config.js", mountUrl).toString());
+          const response = await fetch(new URL("static/manifest.json", mountUrl), { cache: "no-cache" });
+          if (!response.ok) {
+            throw new Error(`Unable to load frontend manifest: ${response.status}`);
+          }
+
+          const manifest = await response.json();
+          const entry = manifest[entryKey];
+          if (entry === undefined || typeof entry.file !== "string") {
+            throw new Error("Frontend manifest does not contain the application entry");
+          }
+
+          appendStylesheets(manifest);
+          appendModulePreloads(manifest);
+
+          const script = document.createElement("script");
+          script.type = "module";
+          script.src = new URL(entry.file, mountUrl).toString();
+          document.head.appendChild(script);
+        }
+
+        void bootstrap().catch((error) => {
+          console.error("Sandala Admin UI bootstrap failed", error);
+        });
+      })();
+    </script>
+    <!-- SANDALA_PRODUCTION_BOOTSTRAP_END -->
+    <!-- SANDALA_DEV_BOOTSTRAP_START -->
+    <script vite-ignore src="./config.js"></script>
+    <!-- SANDALA_DEV_BOOTSTRAP_END -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- SANDALA_DEV_ENTRY_START -->
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- SANDALA_DEV_ENTRY_END -->
+  </body>
+  </html>

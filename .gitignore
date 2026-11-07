@@ -1,0 +1,55 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build artifacts
+build/
+dist/
+node_modules/
+*.egg-info/
+.eggs/
+
+# Test and tooling caches
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.zensical/
+.coverage
+.coverage.*
+htmlcov/
+*.tsbuildinfo
+
+# Frontend app artifacts
+sandala/admin_ui_dist/
+playwright-report/
+test-results/
+*.config.d.ts
+.sandala_assets
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Local environment files and secrets
+.env
+.env.*
+*.env
+!.env.example
+!.env.sample
+!*.env.example
+!*.env.sample
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+demo_data/library/data/

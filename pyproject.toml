@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sandala"
+version = "0.1.0"
+description = "Schema-driven content backend with an administrative interface"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = [
+  "Flask>=3.0.0",
+  "pymongo>=4.6.0",
+  "jsonschema>=4.22.0",
+  "rfc3339-validator>=0.1.4",
+  "argon2-cffi>=23.1.0",
+  "Pillow>=10.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build",
+  "pytest",
+  "testcontainers[mongodb]",
+]
+s3 = [
+  "boto3>=1.34.0",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["sandala", "sandala.*"]
+
+[tool.setuptools.package-data]
+sandala = ["admin_ui_dist/**"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "integration: tests that require external services (Docker/Testcontainers)",
+]

@@ -1,0 +1,3 @@
+# Documentation builder. Pin it exactly: Zensical is still pre-1.0, so even
+# minor releases may change configuration or rendering behavior.
+zensical==0.0.69

@@ -1,0 +1,9 @@
+recursive-include sandala/admin_ui_dist *
+graft admin-ui
+prune admin-ui/node_modules
+prune admin-ui/dist
+prune admin-ui/playwright-report
+prune admin-ui/test-results
+global-exclude .DS_Store
+include scripts/build_distribution.py
+include scripts/verify_distribution.py

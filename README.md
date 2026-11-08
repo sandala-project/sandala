@@ -48,6 +48,11 @@ approaches in the same model — with schemas that keep your data structured.
 The [full documentation](https://sandala-project.github.io/sandala/) covers data modelling, API usage,
 deployment, Python integration, and Sandala's internals.
 
+## AI assistance
+
+Sandala is developed with substantial assistance from AI coding tools.
+Its maintainers are responsible for the project's design, testing, and releases.
+
 ## License
 
 Sandala is licensed under the [MIT License](https://github.com/sandala-project/sandala/blob/main/LICENSE).

@@ -4,15 +4,6 @@ on:
   push:
     tags: ['v*']
   workflow_dispatch:
-    inputs:
-      image_run_id:
-        description: 'Docker-only publication: successful tag Release build run ID (run from main); empty means checks only'
-        type: string
-        default: ''
-      update_latest:
-        description: 'Docker-only publication: also move the latest image tag to this release'
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -23,7 +14,6 @@ concurrency:
 
 jobs:
   documentation:
-    if: github.event_name != 'workflow_dispatch' || inputs.image_run_id == ''
     # The reusable workflow declares a Pages deployment job, but release
     # calls only build the documentation (deploy defaults to false).
     permissions:
@@ -34,57 +24,17 @@ jobs:
     with:
       deploy: false
   build:
-    if: github.event_name != 'workflow_dispatch' || inputs.image_run_id == ''
     uses: ./.github/workflows/ci.yml
     with:
       export_images: true
 
-  prepare-image-publication:
-    name: Validate Docker publication source
-    needs: [build, documentation]
-    if: >-
-      !cancelled() && github.repository == 'sandala-project/sandala' &&
-      ((github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') &&
-        needs.build.result == 'success' && needs.documentation.result == 'success') ||
-       (github.event_name == 'workflow_dispatch' && inputs.image_run_id != ''))
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    permissions:
-      contents: read
-      actions: read
-    outputs:
-      run_id: ${{ steps.source.outputs.run_id }}
-      version: ${{ steps.source.outputs.version }}
-      revision: ${{ steps.source.outputs.revision }}
-      amd64_artifact: ${{ steps.source.outputs.amd64_artifact }}
-      arm64_artifact: ${{ steps.source.outputs.arm64_artifact }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        with:
-          python-version: '3.11'
-      - name: Validate release run, tag, commit, and image artifacts
-        id: source
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SOURCE_RUN_ID: ${{ inputs.image_run_id || github.run_id }}
-        shell: bash
-        run: |
-          args=(--run-id "$SOURCE_RUN_ID")
-          if [[ "$GITHUB_EVENT_NAME" == push ]]; then
-            args+=(--current-run-id "$GITHUB_RUN_ID")
-          elif [[ "$GITHUB_REF" != refs/heads/main ]]; then
-            echo '::error::Run Docker-only publication from main'
-            exit 1
-          fi
-          python scripts/prepare_image_publication.py "${args[@]}" >> "$GITHUB_OUTPUT"
-
   publish-ghcr:
     name: Publish multi-platform Docker image to GHCR
-    needs: prepare-image-publication
-    if: ${{ !cancelled() && needs.prepare-image-publication.result == 'success' }}
+    needs: [build, documentation]
+    if: >-
+      github.repository == 'sandala-project/sandala' &&
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     concurrency:
@@ -94,13 +44,11 @@ jobs:
       name: ghcr
       url: https://github.com/orgs/sandala-project/packages/container/package/sandala
     permissions:
-      actions: read
       packages: write
     env:
       IMAGE: ghcr.io/sandala-project/sandala
-      VERSION: ${{ needs.prepare-image-publication.outputs.version }}
-      REVISION: ${{ needs.prepare-image-publication.outputs.revision }}
-      UPDATE_LATEST: ${{ github.event_name == 'push' || inputs.update_latest }}
+      VERSION: ${{ needs.build.outputs.version }}
+      REVISION: ${{ github.sha }}
     defaults:
       run:
         shell: bash
@@ -108,11 +56,12 @@ jobs:
       # No checkout, rebuild, or execution of image contents in this job.
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          artifact-ids: ${{ needs.prepare-image-publication.outputs.amd64_artifact }},${{ needs.prepare-image-publication.outputs.arm64_artifact }}
+          name: docker-image-linux-amd64
           path: images/
-          merge-multiple: true
-          github-token: ${{ github.token }}
-          run-id: ${{ needs.prepare-image-publication.outputs.run_id }}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: docker-image-linux-arm64
+          path: images/
       - uses: oras-project/setup-oras@5e2f2482b30b0cb3e14e67f89a80c88c659a7c63 # v2.0.3
         with:
           version: '1.3.6'
@@ -154,10 +103,8 @@ jobs:
           oras manifest push --media-type application/vnd.oci.image.index.v1+json "$IMAGE:$VERSION" image-index.json
           oras manifest fetch "$IMAGE:$VERSION" | \
             jq --exit-status --slurpfile expected image-index.json '. == $expected[0]'
-          if [[ "$UPDATE_LATEST" == true ]]; then
-            digest="$(oras resolve "$IMAGE:$VERSION")"
-            oras tag "$IMAGE@$digest" latest
-          fi
+          digest="$(oras resolve "$IMAGE:$VERSION")"
+          oras tag "$IMAGE@$digest" latest
 
   publish-pypi:
     name: Publish Python distributions to PyPI

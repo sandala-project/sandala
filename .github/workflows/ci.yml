@@ -17,6 +17,10 @@ on:
         description: Save the tested Docker images as downloadable artifacts
         type: boolean
         default: false
+    outputs:
+      version:
+        description: Release version validated against the Python and admin UI manifests
+        value: ${{ jobs.version.outputs.version }}
 
 permissions:
   contents: read

@@ -38,16 +38,17 @@ therefore outside the local demo environment.
 
 ## Seed an isolated database
 
-From a source checkout with the project virtual environment installed, choose a
-database name that is not used for application data, set a local-only root
-password, and run the seed:
+From a source checkout with the development dependencies installed (see
+[Installation](../getting-started/installation.md#develop-from-a-source-checkout)),
+choose a database name that is not used for application data, set a local-only
+root password, and run the seed:
 
 ```bash
 export SANDALA_MONGO_URI='mongodb://localhost:27017'
 export SANDALA_MONGO_DB='sandala_demo'
 export SANDALA_ROOT_PASSWORD=''
 
-./.venv/bin/python -m demo_data.library.seed
+python -m demo_data.library.seed
 ```
 
 The empty password above is deliberately invalid: replace it before running the
@@ -59,7 +60,7 @@ generated nodes. It prints a count for each entity when it finishes.
 Start the local backend in the same shell so it uses the same configuration:
 
 ```bash
-./.venv/bin/python -m sandala.api
+python -m sandala.api
 ```
 
 Open `http://localhost:3000/admin/` and sign in as `root` with the password
@@ -68,7 +69,7 @@ chosen above.
 For a smaller fresh dataset, add `--books`:
 
 ```bash
-./.venv/bin/python -m demo_data.library.seed --reset --books 50
+python -m demo_data.library.seed --reset --books 50
 ```
 
 `--reset` drops the demo module's node collection, deletes its entity schemas,
@@ -82,9 +83,9 @@ The built-in records make the demo deterministic and entirely local. To seed
 from a bounded snapshot instead, download it first and then reset the demo:
 
 ```bash
-./.venv/bin/python -m demo_data.library.fetch --count 1200
+python -m demo_data.library.fetch --count 1200
 
-./.venv/bin/python -m demo_data.library.seed \
+python -m demo_data.library.seed \
   --reset \
   --source-snapshot demo_data/library/data/openlibrary_search.json
 ```

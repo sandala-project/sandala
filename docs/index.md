@@ -43,4 +43,4 @@ approaches in the same model — with schemas that keep your data structured.
 - [Reference](reference/rest-api/overview.md) — look up REST contracts,
   semantic types, configuration, and the Python API.
 - [Development](development/architecture.md) — explore the architecture,
-  implementation boundaries, and testing practices.
+  implementation boundaries, testing practices, and release automation.

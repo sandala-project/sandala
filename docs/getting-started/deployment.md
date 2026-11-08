@@ -1,7 +1,7 @@
 # Deployment
 
 This page covers running Sandala beyond local development. Start with
-[Installation](installation.md) for the image build, package installation,
+[Installation](installation.md) for the container image, package installation,
 and a local MongoDB setup. The complete setting list is in
 [Configuration](../reference/configuration.md).
 
@@ -14,7 +14,7 @@ on the same origin without changing their default paths.
 
 ### Docker
 
-The repository image includes Gunicorn, the built admin UI, and S3 support.
+The official Sandala image includes Gunicorn, the built admin UI, and S3 support.
 Keep configuration outside the image. For example, a private
 `/etc/sandala/sandala.env` file could contain:
 
@@ -31,8 +31,8 @@ do not commit the file. You can remove the password from the startup environment
 once bootstrap has succeeded. Subsequent starts do not reset the stored
 password. See [First bootstrap](installation.md#first-bootstrap).
 
-With the image and Docker network from Installation, start Sandala behind a
-proxy running on the host:
+With the MongoDB container and Docker network from Installation, start Sandala
+behind a proxy running on the host:
 
 ```bash
 docker run --detach \
@@ -42,7 +42,7 @@ docker run --detach \
   --publish 127.0.0.1:3000:3000 \
   --env-file /etc/sandala/sandala.env \
   --volume sandala-assets:/var/lib/sandala/assets \
-  sandala:local
+  ghcr.io/sandala-project/sandala:latest
 ```
 
 The loopback-only port is for the host's proxy, not direct public access. If

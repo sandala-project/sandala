@@ -59,6 +59,7 @@ nav = [
     { "Bootstrap and the users module" = "development/bootstrap-and-users-module.md" },
     { "Frontend architecture" = "development/frontend-architecture.md" },
     { "Testing" = "development/testing.md" },
+    { "CI and releases" = "development/ci-and-releases.md" },
   ] },
 ]
 

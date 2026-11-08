@@ -28,6 +28,7 @@ Guides when an explanation or worked example is affected too.
 | Assets, repositories, indexes, and blob backends | [Assets](docs/reference/rest-api/assets.md) and [Storage](docs/development/storage.md). |
 | Direct Python use and application composition | [Python API](docs/reference/python-api.md) and [Embedding Sandala](docs/guides/embedding-sandala.md). |
 | Configuration, packaging, and deployment | [Configuration](docs/reference/configuration.md), [Installation](docs/getting-started/installation.md), and [Deployment](docs/getting-started/deployment.md). |
+| CI, release automation, and documentation publication | [CI and releases](docs/development/ci-and-releases.md) and [Testing](docs/development/testing.md). |
 | Admin UI behavior and implementation | [Admin UI](docs/reference/admin-ui.md), [Using the Admin UI](docs/guides/using-the-admin-ui.md), and [Frontend architecture](docs/development/frontend-architecture.md). |
 
 ## Working rules

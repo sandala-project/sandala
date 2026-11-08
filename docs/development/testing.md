@@ -16,12 +16,14 @@ distribution builder, and Twine for package validation. The `s3` extra supplies
 
 The repository has three workflows. Build and test jobs have read-only
 repository permissions. GitHub Pages deployment uses `pages: write` and
-`id-token: write`; PyPI publication uses only `id-token: write`.
+`id-token: write`; PyPI publication uses only `id-token: write`. Docker
+publication uses `actions: read` to download verified artifacts and
+`packages: write` to push them to GHCR.
 
 | Workflow | Runs on | Result |
 | --- | --- | --- |
 | **CI** | Pushes to `main`, pull requests, manual runs, and calls from Release build; documentation-only changes use the documentation workflow instead. | Unit tests on Python 3.11 and 3.14, MongoDB/S3 integration tests, verified Python distributions, and Docker builds for `linux/amd64` and `linux/arm64`. |
-| **Release build** | Tags matching `v*`, or a manual run on a selected ref. | The same CI and documentation checks, plus downloadable Docker images for both architectures. Tag pushes in `sandala-project/sandala` also publish the verified Python distributions to PyPI. |
+| **Release build** | Tags matching `v*`, or a manual run on a selected ref. | CI and documentation checks, plus downloadable Docker images for both architectures. Tag pushes in `sandala-project/sandala` also publish Python distributions to PyPI and a multi-platform Docker image to GHCR, subject to their environment approvals. A separate manual mode publishes Docker artifacts from an earlier successful tag release. |
 | **Documentation build** | Documentation, Zensical configuration, or documentation-workflow changes on `main` or in a pull request; manual runs and calls from Release build. | A clean, strict Zensical build saved as the `documentation-site` artifact; eligible runs on `main` also deploy to GitHub Pages. |
 
 Release tags use `vMAJOR.MINOR.PATCH` and match the versions in `pyproject.toml`,
@@ -47,10 +49,38 @@ distribution artifact. The publishing job uses
 [PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/using-a-publisher/) and
 the `pypi` GitHub environment, not a stored API token. Configure the matching
 Trusted Publisher on PyPI and required reviewers for that GitHub environment
-before pushing a release tag. Manual Release build runs never publish, even
-when a tag is selected.
+before pushing a release tag. Manual Release build runs never publish to PyPI,
+even when a tag is selected.
 
-The workflows do not publish Docker images or create GitHub Releases.
+Docker publication also waits for CI and documentation checks. It uses the
+`ghcr` environment and the workflow's short-lived `GITHUB_TOKEN`, not a stored
+registry password. Configure required reviewers and disable administrator
+bypass on this environment; allow `v*` tags and the `main` branch. The publishing
+job downloads the exact Docker artifacts, checks their platforms without
+executing them, and pushes `ghcr.io/sandala-project/sandala:VERSION-amd64` and
+`:VERSION-arm64`. It combines their digests into the multi-platform `:VERSION`
+tag and, for tag-triggered releases, updates `:latest`. The image index includes
+source, license, version, and source-commit annotations. Publication does not
+rebuild the images or run project code in the job with registry write access.
+
+To publish only Docker images from an existing release, manually run **Release
+build** from `main` and set `image_run_id` to that successful tag-triggered
+Release build's run ID. This mode skips tests and builds because it reuses their
+verified artifacts; it does not publish Python packages. Validation checks the
+source repository, workflow, event, successful completion, release-tag syntax,
+current tag-to-commit mapping, and availability of both image artifacts before
+requesting the `ghcr` approval. Ordinary CI runs, pull requests, manual builds,
+and expired artifacts are not accepted as publication sources. Leave
+`image_run_id` empty for the usual verification-only manual run.
+
+The Docker-only mode leaves `:latest` unchanged unless `update_latest` is
+enabled. Use that option when promoting a release, not when backfilling an older
+version. After the first GHCR publication, change the package's visibility to
+**Public** in its package settings, then verify an unauthenticated pull; a new
+GHCR package is private by default. See GitHub's
+[Container registry documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
+
+The workflows do not create GitHub Releases.
 Download artifacts from the workflow run in the Actions tab.
 Python distributions include `SHA256SUMS`; saved Docker
 images can be loaded with `docker load --input <downloaded-image>.tar.gz`.

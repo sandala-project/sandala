@@ -48,6 +48,8 @@ configure the view:
 - **Filter** and **Sort** provide visual builders and an Advanced JSON mode.
 - **Create node** opens an editor for the selected entity.
 
+![Book table](../assets/admin-ui/table.png)
+
 The visual builders expose fields meaningful to the current user. Use Advanced
 JSON when the complete query language is needed; its syntax and restrictions
 are documented in [Nodes](../reference/rest-api/nodes.md).

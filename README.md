@@ -1,6 +1,17 @@
-# Sandala
+<p align="center">
+  <img src="https://sandala-project.github.io/sandala/assets/sandala-wordmark.svg" alt="Sandala" width="408" height="80">
+</p>
 
-**Define your data. Get an API and an admin UI. Keep the power of MongoDB.**
+<p align="center">
+  <strong>Define your data. Get an API and an admin UI. Keep the power of MongoDB.</strong>
+</p>
+
+<p align="center">
+  <a href="https://pypi.org/project/sandala/"><img src="https://img.shields.io/pypi/v/sandala?label=PyPI&amp;color=0969DA" alt="PyPI version"></a>
+  <a href="https://github.com/sandala-project/sandala/pkgs/container/sandala"><img src="https://img.shields.io/badge/Docker-GHCR-0969DA?logo=docker&amp;logoColor=white" alt="Docker image on GHCR"></a>
+  <a href="https://sandala-project.github.io/sandala/"><img src="https://img.shields.io/badge/docs-online-0969DA" alt="Documentation"></a>
+  <a href="https://github.com/sandala-project/sandala/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT"></a>
+</p>
 
 Sandala is an open-source headless CMS for structured data, built on MongoDB.
 Define your data models and get a REST API and a ready-to-use admin UI — with
@@ -16,14 +27,14 @@ approaches in the same model — with schemas that keep your data structured.
   and optional trees let you organize data the way your application needs.
 - **Query through relationships.** Filter and sort by linked data, choose the
   fields you need, and fetch related documents in one API request.
-- **Skip building the back office.** Manage schemas, browse data, and edit
-  content in an admin UI that follows your data model.
+- **Work with data your way.** Edit records in familiar tables, explore them
+  as a tree, and manage your schemas — all in one admin UI.
 - **Build on the essentials.** Node permissions, field-level access controls,
   users, groups, and local or S3-compatible file storage are already there.
 - **Make it yours.** Run Sandala as a standalone backend, extend it with Python
   hooks, or embed it in your own Python application.
 
-[![Designing a Book data model in the Sandala admin UI](https://sandala-project.github.io/sandala/assets/admin-ui/schema-editor-wide.png)](https://sandala-project.github.io/sandala/guides/using-the-admin-ui/)
+[![Working with a table in the Sandala admin UI](https://sandala-project.github.io/sandala/assets/admin-ui/table.png)](https://sandala-project.github.io/sandala/guides/using-the-admin-ui/)
 
 ## Get started
 

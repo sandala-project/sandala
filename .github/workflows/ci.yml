@@ -6,10 +6,14 @@ on:
     paths-ignore:
       - docs/**
       - zensical.toml
+      - README.md
+      - AGENTS.md
   pull_request:
     paths-ignore:
       - docs/**
       - zensical.toml
+      - README.md
+      - AGENTS.md
   workflow_dispatch:
   workflow_call:
     inputs:

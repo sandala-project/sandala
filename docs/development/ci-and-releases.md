@@ -9,9 +9,16 @@ publish releases and documentation. Their definitions are in
 
 | Workflow | Runs on | Result |
 | --- | --- | --- |
-| **CI** | Pushes to `main`, pull requests, manual runs, and calls from Release build; documentation-only changes use the documentation workflow instead. | Unit tests on Python 3.11 and 3.14, MongoDB/S3 integration tests, verified Python distributions, and Docker builds for `linux/amd64` and `linux/arm64`. |
+| **CI** | Pushes to `main` and pull requests, with the path exclusions described below; manual runs and calls from Release build. | Unit tests on Python 3.11 and 3.14, MongoDB/S3 integration tests, verified Python distributions, and Docker builds for `linux/amd64` and `linux/arm64`. |
 | **Release build** | Tags matching `v*`, or a manual run on a selected ref. | CI and documentation checks, plus downloadable Docker images for both architectures. Tag pushes in `sandala-project/sandala` also publish Python distributions to PyPI and a multi-platform Docker image to GHCR, subject to their environment approvals. |
 | **Documentation build** | Documentation, Zensical configuration, or documentation-workflow changes on `main` or in a pull request; manual runs and calls from Release build. | A clean, strict Zensical build saved as the `documentation-site` artifact; eligible runs on `main` also deploy to GitHub Pages. |
+
+Automatic CI runs are skipped when all changed files are under `docs/` or are
+`zensical.toml`, `README.md`, or `AGENTS.md`. Changes to dependencies, tests,
+build scripts, Docker configuration, or workflows still trigger CI. These path
+exclusions do not apply to manual runs or calls from Release build. The
+documentation workflow has its own triggers; README-only and AGENTS-only
+changes do not rebuild the site.
 
 CI rejects integration runs with skipped tests rather than treating them as
 successful checks.
@@ -61,11 +68,6 @@ Publication reads the index back and checks it against the expected platforms,
 digests, and source, description, license, version, and source-commit
 annotations. It does not rebuild the images or run project code in the job
 with registry write access.
-
-After the first GHCR publication, change the package's visibility to **Public**
-in its package settings, then verify an unauthenticated pull; a new GHCR
-package is private by default. See GitHub's
-[Container registry documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
 
 ## Documentation publication
 

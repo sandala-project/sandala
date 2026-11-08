@@ -64,6 +64,8 @@ nav = [
 ]
 
 [project.theme]
+logo = "assets/sandala-icon.svg"
+favicon = "assets/sandala-icon.svg"
 features = [
   "navigation.instant",
   "navigation.tracking",

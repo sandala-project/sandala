@@ -16,14 +16,14 @@ approaches in the same model — with schemas that keep your data structured.
   and optional trees let you organize data the way your application needs.
 - **Query through relationships.** Filter and sort by linked data, choose the
   fields you need, and fetch related documents in one API request.
-- **Skip building the back office.** Manage schemas, browse data, and edit
-  content in an admin UI that follows your data model.
+- **Work with data your way.** Edit records in familiar tables, explore them
+  as a tree, and manage your schemas — all in one admin UI.
 - **Build on the essentials.** Node permissions, field-level access controls,
   users, groups, and local or S3-compatible file storage are already there.
 - **Make it yours.** Run Sandala as a standalone backend, extend it with Python
   hooks, or embed it in your own Python application.
 
-[![Designing a Book data model in the Sandala admin UI](assets/admin-ui/schema-editor-wide.png)](guides/using-the-admin-ui.md)
+[![Working with a table in the Sandala admin UI](assets/admin-ui/table.png)](guides/using-the-admin-ui.md)
 
 ## Get started
 

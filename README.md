@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://sandala-project.github.io/sandala/assets/sandala-wordmark.svg" alt="Sandala" width="408" height="80">
+  <img src="https://sandala-project.github.io/sandala/assets/sandala-wordmark.svg" alt="Sandala" width="408">
 </p>
 
 <p align="center">

@@ -59,8 +59,11 @@ bypass on this environment; allow `v*` tags and the `main` branch. The publishin
 job downloads the exact Docker artifacts, checks their platforms without
 executing them, and pushes `ghcr.io/sandala-project/sandala:VERSION-amd64` and
 `:VERSION-arm64`. It combines their digests into the multi-platform `:VERSION`
-tag and, for tag-triggered releases, updates `:latest`. The image index includes
-source, license, version, and source-commit annotations. Publication does not
+tag and, for tag-triggered releases, updates `:latest`. ORAS publishes an explicit
+OCI index so that annotations are preserved even when the architecture-specific
+manifests use the Docker media type. Publication reads the index back and checks
+it against the expected platforms, digests, and source, description, license,
+version, and source-commit annotations. Publication does not
 rebuild the images or run project code in the job with registry write access.
 
 To publish only Docker images from an existing release, manually run **Release

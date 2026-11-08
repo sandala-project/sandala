@@ -113,7 +113,9 @@ jobs:
           merge-multiple: true
           github-token: ${{ github.token }}
           run-id: ${{ needs.prepare-image-publication.outputs.run_id }}
-      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: oras-project/setup-oras@5e2f2482b30b0cb3e14e67f89a80c88c659a7c63 # v2.0.3
+        with:
+          version: '1.3.6'
       - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
         with:
           registry: ghcr.io
@@ -121,7 +123,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push tested images and assemble the release manifest
         run: |
-          sources=()
           for arch in amd64 arm64; do
             docker load --input "images/sandala-$VERSION-linux-$arch.tar.gz"
             platform="$(docker image inspect "sandala:$VERSION" --format '{{.Os}}/{{.Architecture}}')"
@@ -132,25 +133,30 @@ jobs:
             target="$IMAGE:$VERSION-$arch"
             docker tag "sandala:$VERSION" "$target"
             docker push "$target"
-            digest="$(docker buildx imagetools inspect "$target" --format '{{.Manifest.Digest}}')"
-            if [[ ! "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]; then
-              echo '::error::Expected the pushed image manifest digest'
-              exit 1
-            fi
-            sources+=("$IMAGE@$digest")
+            oras manifest fetch --descriptor "$target" | \
+              jq --arg arch "$arch" '.platform = {os: "linux", architecture: $arch}' > "$arch.json"
           done
-          docker buildx imagetools create \
-            --annotation 'index:org.opencontainers.image.source=https://github.com/sandala-project/sandala' \
-            --annotation 'index:org.opencontainers.image.description=Headless CMS for structured data, built on MongoDB with an admin UI' \
-            --annotation 'index:org.opencontainers.image.licenses=MIT' \
-            --annotation "index:org.opencontainers.image.version=$VERSION" \
-            --annotation "index:org.opencontainers.image.revision=$REVISION" \
-            --tag "$IMAGE:$VERSION" "${sources[@]}"
-          docker buildx imagetools inspect "$IMAGE:$VERSION" --raw | \
-            jq --exit-status '[.manifests[].platform | .os + "/" + .architecture] | sort == ["linux/amd64", "linux/arm64"]'
+          # Build an OCI index explicitly: Buildx drops index annotations when
+          # every source manifest uses the Docker media type.
+          jq --null-input --slurpfile amd64 amd64.json --slurpfile arm64 arm64.json \
+            --arg version "$VERSION" --arg revision "$REVISION" '{
+              schemaVersion: 2,
+              mediaType: "application/vnd.oci.image.index.v1+json",
+              manifests: [$amd64[0], $arm64[0]],
+              annotations: {
+                "org.opencontainers.image.source": "https://github.com/sandala-project/sandala",
+                "org.opencontainers.image.description": "Headless CMS for structured data, built on MongoDB with an admin UI",
+                "org.opencontainers.image.licenses": "MIT",
+                "org.opencontainers.image.version": $version,
+                "org.opencontainers.image.revision": $revision
+              }
+            }' > image-index.json
+          oras manifest push --media-type application/vnd.oci.image.index.v1+json "$IMAGE:$VERSION" image-index.json
+          oras manifest fetch "$IMAGE:$VERSION" | \
+            jq --exit-status --slurpfile expected image-index.json '. == $expected[0]'
           if [[ "$UPDATE_LATEST" == true ]]; then
-            digest="$(docker buildx imagetools inspect "$IMAGE:$VERSION" --format '{{.Manifest.Digest}}')"
-            docker buildx imagetools create --tag "$IMAGE:latest" "$IMAGE@$digest"
+            digest="$(oras resolve "$IMAGE:$VERSION")"
+            oras tag "$IMAGE@$digest" latest
           fi
 
   publish-pypi:

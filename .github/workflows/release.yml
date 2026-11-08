@@ -14,7 +14,15 @@ concurrency:
 
 jobs:
   documentation:
+    # The reusable workflow declares a Pages deployment job, but release
+    # calls only build the documentation (deploy defaults to false).
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     uses: ./.github/workflows/docs.yml
+    with:
+      deploy: false
   build:
     uses: ./.github/workflows/ci.yml
     with:

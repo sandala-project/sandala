@@ -13,7 +13,17 @@ on:
       - zensical.toml
       - .github/workflows/docs.yml
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Publish the site to GitHub Pages (main only)
+        type: boolean
+        default: true
   workflow_call:
+    inputs:
+      deploy:
+        description: Publish the site to GitHub Pages (main only)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -24,10 +34,12 @@ defaults:
 
 concurrency:
   group: docs-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
+    permissions:
+      contents: read
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -48,3 +60,35 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 7
+      - name: Package the site for GitHub Pages
+        if: >-
+          github.repository == 'sandala-project/sandala' &&
+          github.ref == 'refs/heads/main' &&
+          (github.event_name == 'push' ||
+           (github.event_name == 'workflow_dispatch' && inputs.deploy))
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: .zensical/site/
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: >-
+      github.repository == 'sandala-project/sandala' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && inputs.deploy))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - name: Deploy the site
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

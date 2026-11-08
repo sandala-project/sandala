@@ -1,5 +1,6 @@
 [project]
 site_name = "Sandala"
+site_url = "https://sandala-project.github.io/sandala/"
 site_description = "Headless CMS for structured data, built on MongoDB with an admin UI"
 docs_dir = "docs"
 site_dir = ".zensical/site"

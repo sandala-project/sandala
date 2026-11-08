@@ -14,22 +14,34 @@ needed for the non-integration suite.
 
 ## GitHub Actions
 
-The repository has three workflows, all with read-only repository permissions:
+The repository has three workflows. Build and test jobs have read-only
+repository permissions; only the GitHub Pages deployment job has `pages: write`
+and `id-token: write` permissions.
 
 | Workflow | Runs on | Result |
 | --- | --- | --- |
 | **CI** | Pushes to `main`, pull requests, manual runs, and calls from Release build; documentation-only changes use the documentation workflow instead. | Unit tests on Python 3.11 and 3.14, MongoDB/S3 integration tests, verified Python distributions, and Docker builds for `linux/amd64` and `linux/arm64`. |
 | **Release build** | Tags matching `v*`, or a manual run on a selected ref. | The same CI and documentation checks, plus downloadable Docker images for both architectures. |
-| **Documentation build** | Documentation, Zensical configuration, or documentation-workflow changes on `main` or in a pull request; manual runs and calls from Release build. | A clean, strict Zensical build saved as the `documentation-site` artifact. |
+| **Documentation build** | Documentation, Zensical configuration, or documentation-workflow changes on `main` or in a pull request; manual runs and calls from Release build. | A clean, strict Zensical build saved as the `documentation-site` artifact; eligible runs on `main` also deploy to GitHub Pages. |
 
 Release tags use `vMAJOR.MINOR.PATCH` and match the versions in `pyproject.toml`,
 `admin-ui/package.json`, and both root version entries in the npm lock file.
 Manual branch runs check version consistency without requiring a tag.
 Integration runs fail if tests are skipped instead of executed.
 
-The workflows do not publish packages, images, GitHub Releases, or GitHub Pages,
-and require no publishing credentials. Download artifacts from the workflow run
-in the Actions tab. Python distributions include `SHA256SUMS`; saved Docker
+In `sandala-project/sandala`, documentation pushes to `main` deploy the site to
+[GitHub Pages](https://sandala-project.github.io/sandala/). A manual Documentation
+build on `main` also deploys unless its `deploy` option is disabled. Pull requests,
+other branches, and calls from Release build only build the documentation.
+In the repository's **Settings → Pages**, the publishing source is **GitHub Actions**.
+Pages deployment uses the `github-pages` environment and GitHub's short-lived
+token; no publishing secret is required. Release build grants the reusable
+documentation workflow the permissions it declares, but passes `deploy: false`.
+Its build job still has only `contents: read` permission.
+
+The workflows do not publish Python packages, Docker images, or GitHub Releases.
+Download artifacts from the workflow run in the Actions tab.
+Python distributions include `SHA256SUMS`; saved Docker
 images can be loaded with `docker load --input <downloaded-image>.tar.gz`.
 Serve the extracted documentation site with a local HTTP server to preview it.
 Test reports, distributions, and documentation artifacts are retained for seven

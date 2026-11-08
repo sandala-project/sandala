@@ -23,20 +23,20 @@ approaches in the same model — with schemas that keep your data structured.
 - **Make it yours.** Run Sandala as a standalone backend, extend it with Python
   hooks, or embed it in your own Python application.
 
-[![Designing a Book data model in the Sandala admin UI](docs/assets/admin-ui/schema-editor-wide.png)](docs/guides/using-the-admin-ui.md)
+[![Designing a Book data model in the Sandala admin UI](https://sandala-project.github.io/sandala/assets/admin-ui/schema-editor-wide.png)](https://sandala-project.github.io/sandala/guides/using-the-admin-ui/)
 
 ## Get started
 
-- [Install Sandala](docs/getting-started/installation.md) — run with Docker or
+- [Install Sandala](https://sandala-project.github.io/sandala/getting-started/installation/) — run with Docker or
   install the Python package. The admin UI is included.
-- [Follow the quickstart](docs/getting-started/quickstart.md) — define your first
+- [Follow the quickstart](https://sandala-project.github.io/sandala/getting-started/quickstart/) — define your first
   data model, create records, and query them through the API.
-- [Explore the demo library](docs/guides/demo-library.md) — try a sample catalogue
+- [Explore the demo library](https://sandala-project.github.io/sandala/guides/demo-library/) — try a sample catalogue
   with books, authors, linked data, and a browsable tree.
 
-The [full documentation](docs/index.md) covers data modelling, API usage,
+The [full documentation](https://sandala-project.github.io/sandala/) covers data modelling, API usage,
 deployment, Python integration, and Sandala's internals.
 
 ## License
 
-Sandala is licensed under the [MIT License](LICENSE).
+Sandala is licensed under the [MIT License](https://github.com/sandala-project/sandala/blob/main/LICENSE).

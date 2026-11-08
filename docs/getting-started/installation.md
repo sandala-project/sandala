@@ -159,8 +159,8 @@ python3.11 -m venv .venv
 ./.venv/bin/python -m pip install -e '.[dev]'
 ```
 
-The `dev` extra includes the Python distribution builder, pytest, and MongoDB
-Testcontainers. For the full backend test setup, including S3 support, see
+The `dev` extra includes the Python distribution builder, Twine, pytest, and
+MongoDB Testcontainers. For the full backend test setup, including S3 support, see
 [Testing](../development/testing.md).
 
 For admin UI development, install its independent Node.js

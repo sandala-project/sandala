@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sandala"
 version = "0.1.0"
-description = "Schema-driven content backend with an administrative interface"
+description = "Headless CMS for structured data, built on MongoDB with an admin UI"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -19,9 +19,15 @@ dependencies = [
   "Pillow>=10.0.0",
 ]
 
+[project.urls]
+Documentation = "https://sandala-project.github.io/sandala/"
+Source = "https://github.com/sandala-project/sandala"
+Issues = "https://github.com/sandala-project/sandala/issues"
+
 [project.optional-dependencies]
 dev = [
   "build",
+  "twine",
   "pytest",
   "testcontainers[mongodb]",
 ]

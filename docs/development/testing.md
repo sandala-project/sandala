@@ -8,20 +8,20 @@ python3.11 -m venv .venv
 ./.venv/bin/python -m pip install -e '.[dev,s3]'
 ```
 
-The `dev` extra supplies pytest, MongoDB Testcontainers, and the Python
-distribution builder. The `s3` extra supplies `boto3` for S3 tests; it is not
-needed for the non-integration suite.
+The `dev` extra supplies pytest, MongoDB Testcontainers, the Python
+distribution builder, and Twine for package validation. The `s3` extra supplies
+`boto3` for S3 tests; it is not needed for the non-integration suite.
 
 ## GitHub Actions
 
 The repository has three workflows. Build and test jobs have read-only
-repository permissions; only the GitHub Pages deployment job has `pages: write`
-and `id-token: write` permissions.
+repository permissions. GitHub Pages deployment uses `pages: write` and
+`id-token: write`; PyPI publication uses only `id-token: write`.
 
 | Workflow | Runs on | Result |
 | --- | --- | --- |
 | **CI** | Pushes to `main`, pull requests, manual runs, and calls from Release build; documentation-only changes use the documentation workflow instead. | Unit tests on Python 3.11 and 3.14, MongoDB/S3 integration tests, verified Python distributions, and Docker builds for `linux/amd64` and `linux/arm64`. |
-| **Release build** | Tags matching `v*`, or a manual run on a selected ref. | The same CI and documentation checks, plus downloadable Docker images for both architectures. |
+| **Release build** | Tags matching `v*`, or a manual run on a selected ref. | The same CI and documentation checks, plus downloadable Docker images for both architectures. Tag pushes in `sandala-project/sandala` also publish the verified Python distributions to PyPI. |
 | **Documentation build** | Documentation, Zensical configuration, or documentation-workflow changes on `main` or in a pull request; manual runs and calls from Release build. | A clean, strict Zensical build saved as the `documentation-site` artifact; eligible runs on `main` also deploy to GitHub Pages. |
 
 Release tags use `vMAJOR.MINOR.PATCH` and match the versions in `pyproject.toml`,
@@ -39,7 +39,18 @@ token; no publishing secret is required. Release build grants the reusable
 documentation workflow the permissions it declares, but passes `deploy: false`.
 Its build job still has only `contents: read` permission.
 
-The workflows do not publish Python packages, Docker images, or GitHub Releases.
+PyPI publication waits for all CI and documentation checks, including both
+Docker builds. It downloads the already verified wheel and sdist, checks their
+SHA-256 checksums, and publishes without rebuilding them. CI runs
+`python -m twine check --strict dist/*.whl dist/*.tar.gz` before saving the
+distribution artifact. The publishing job uses
+[PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/using-a-publisher/) and
+the `pypi` GitHub environment, not a stored API token. Configure the matching
+Trusted Publisher on PyPI and required reviewers for that GitHub environment
+before pushing a release tag. Manual Release build runs never publish, even
+when a tag is selected.
+
+The workflows do not publish Docker images or create GitHub Releases.
 Download artifacts from the workflow run in the Actions tab.
 Python distributions include `SHA256SUMS`; saved Docker
 images can be loaded with `docker load --input <downloaded-image>.tar.gz`.
